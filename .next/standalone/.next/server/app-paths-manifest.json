@@ -1,0 +1,11 @@
+{
+  "/api/projects/[projectId]/preview/route": "app/api/projects/[projectId]/preview/route.js",
+  "/api/projects/[projectId]/export/route": "app/api/projects/[projectId]/export/route.js",
+  "/api/projects/route": "app/api/projects/route.js",
+  "/api/projects/[projectId]/preview/[artifactId]/route": "app/api/projects/[projectId]/preview/[artifactId]/route.js",
+  "/api/projects/[projectId]/route": "app/api/projects/[projectId]/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/page": "app/page.js",
+  "/projects/[projectId]/page": "app/projects/[projectId]/page.js"
+}

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "modelId": "340754fad6d743d1",
+  "title": "AirPurifierCADCombined",
+  "source": {
+    "type": "FCStd",
+    "fileName": "model.fcstd",
+    "spreadsheetName": "Spreadsheet"
+  },
+  "outputs": {
+    "preview": "STL",
+    "downloads": [
+      "STL",
+      "STEP"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "noOfRings",
+      "address": "A1",
+      "label": "No Of Rings",
+      "hidden": false,
+      "order": 0,
+      "type": "integer",
+      "defaultValue": 5,
+      "sourceValue": "5"
+    },
+    {
+      "id": "coverMeshHeight",
+      "address": "A2",
+      "label": "Cover Mesh Height",
+      "hidden": false,
+      "order": 1,
+      "type": "text",
+      "defaultValue": "=20 mm",
+      "sourceValue": "=20 mm"
+    },
+    {
+      "id": "coverMeshInnerDiameter",
+      "address": "A3",
+      "label": "Cover Mesh Inner Diameter",
+      "hidden": false,
+      "order": 2,
+      "type": "text",
+      "defaultValue": "=147.65 mm",
+      "sourceValue": "=147.65 mm"
+    },
+    {
+      "id": "wallThickness",
+      "address": "A4",
+      "label": "Wall Thickness",
+      "hidden": false,
+      "order": 3,
+      "type": "text",
+      "defaultValue": "=2 mm",
+      "sourceValue": "=2 mm"
+    }
+  ]
+}

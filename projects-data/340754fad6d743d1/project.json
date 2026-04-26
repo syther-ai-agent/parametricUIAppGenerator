@@ -1,0 +1,17 @@
+{
+  "id": "340754fad6d743d1",
+  "sourceType": "FCStd",
+  "sourceFileName": "AirPurifierCADCombined.FCStd",
+  "createdAt": "2026-04-19T20:37:47.105Z",
+  "title": "AirPurifierCADCombined",
+  "capabilities": {
+    "configurable": true,
+    "previewFormats": [
+      "STL"
+    ],
+    "downloadFormats": [
+      "STL",
+      "STEP"
+    ]
+  }
+}

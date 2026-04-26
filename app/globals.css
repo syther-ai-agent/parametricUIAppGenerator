@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: #0f172a;
+  font-family: Inter, "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 28%),
+    radial-gradient(circle at right center, rgba(232, 241, 255, 0.72), transparent 24%),
+    linear-gradient(180deg, #f7faf5 0%, #eef3ec 100%);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}

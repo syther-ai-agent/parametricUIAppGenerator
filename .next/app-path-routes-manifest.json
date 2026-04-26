@@ -1,0 +1,11 @@
+{
+  "/api/projects/[projectId]/preview/route": "/api/projects/[projectId]/preview",
+  "/api/projects/[projectId]/export/route": "/api/projects/[projectId]/export",
+  "/api/projects/route": "/api/projects",
+  "/api/projects/[projectId]/preview/[artifactId]/route": "/api/projects/[projectId]/preview/[artifactId]",
+  "/api/projects/[projectId]/route": "/api/projects/[projectId]",
+  "/_not-found/page": "/_not-found",
+  "/admin/page": "/admin",
+  "/page": "/",
+  "/projects/[projectId]/page": "/projects/[projectId]"
+}

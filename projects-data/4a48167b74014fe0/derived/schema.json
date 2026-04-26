@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "modelId": "4a48167b74014fe0",
+  "title": "IDCardDesignWorking",
+  "source": {
+    "type": "FCStd",
+    "fileName": "model.fcstd",
+    "spreadsheetName": "Spreadsheet"
+  },
+  "outputs": {
+    "preview": "STL",
+    "downloads": [
+      "STL",
+      "STEP"
+    ]
+  },
+  "parameters": [
+    {
+      "id": "cardWidth",
+      "address": "A1",
+      "label": "Card Width",
+      "hidden": false,
+      "order": 0,
+      "type": "number",
+      "defaultValue": 54.1,
+      "sourceValue": "54.1"
+    },
+    {
+      "id": "cardHeight",
+      "address": "A2",
+      "label": "Card Height",
+      "hidden": false,
+      "order": 1,
+      "type": "number",
+      "defaultValue": 85.7,
+      "sourceValue": "85.7"
+    },
+    {
+      "id": "holeLength",
+      "address": "A3",
+      "label": "Hole Length",
+      "hidden": false,
+      "order": 2,
+      "type": "integer",
+      "defaultValue": 14,
+      "sourceValue": "14"
+    },
+    {
+      "id": "holeHeight",
+      "address": "A4",
+      "label": "Hole Height",
+      "hidden": false,
+      "order": 3,
+      "type": "number",
+      "defaultValue": 4.2,
+      "sourceValue": "4.2"
+    },
+    {
+      "id": "cardCornerRadius",
+      "address": "A5",
+      "label": "Card Corner Radius",
+      "hidden": false,
+      "order": 4,
+      "type": "number",
+      "defaultValue": 1.25,
+      "sourceValue": "1.25"
+    },
+    {
+      "id": "cardThickness",
+      "address": "A6",
+      "label": "Card Thickness",
+      "hidden": false,
+      "order": 5,
+      "type": "integer",
+      "defaultValue": 1,
+      "sourceValue": "1"
+    },
+    {
+      "id": "privateNotchThickness",
+      "address": "A9",
+      "label": "Private Notch Thickness",
+      "hidden": false,
+      "order": 6,
+      "type": "integer",
+      "defaultValue": 1,
+      "sourceValue": "1"
+    },
+    {
+      "id": "privateCardHolderBaseThickness",
+      "address": "A10",
+      "label": "Private Card Holder Base Thickness",
+      "hidden": false,
+      "order": 7,
+      "type": "number",
+      "defaultValue": 0.6,
+      "sourceValue": "0.6"
+    },
+    {
+      "id": "privateCardSlideTolerance",
+      "address": "A11",
+      "label": "Private Card Slide Tolerance",
+      "hidden": false,
+      "order": 8,
+      "type": "number",
+      "defaultValue": 0.6,
+      "sourceValue": "0.6"
+    }
+  ]
+}

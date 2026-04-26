@@ -1,0 +1,17 @@
+{
+  "id": "4a48167b74014fe0",
+  "sourceType": "FCStd",
+  "sourceFileName": "IDCardDesignWorking.FCStd",
+  "createdAt": "2026-04-19T19:20:11.977Z",
+  "title": "IDCardDesignWorking",
+  "capabilities": {
+    "configurable": true,
+    "previewFormats": [
+      "STL"
+    ],
+    "downloadFormats": [
+      "STL",
+      "STEP"
+    ]
+  }
+}
