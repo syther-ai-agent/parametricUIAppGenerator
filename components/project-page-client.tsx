@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
+  ChevronDown,
+  ChevronRight,
   Download,
   Eye,
   FileType2,
@@ -28,6 +30,9 @@ type PreviewState =
   | { status: 'ready'; previewUrl: string; format: 'stl' | 'glb'; generatedAt: string }
   | { status: 'error'; message: string };
 
+const isPrivateParameter = (parameter: GeneratedModelSchema['parameters'][number]) =>
+  /^(private)\b/i.test(parameter.label) || /^(private)/i.test(parameter.id);
+
 const buildInitialValues = (schema: GeneratedModelSchema) =>
   Object.fromEntries(schema.parameters.map((parameter) => [parameter.id, parameter.defaultValue])) as Record<string, ParameterValue>;
 
@@ -48,21 +53,22 @@ export function ProjectPageClient({
   const [preview, setPreview] = useState<PreviewState>({ status: 'loading' });
   const [downloading, setDownloading] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [privateControlsCollapsed, setPrivateControlsCollapsed] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const latestRequest = useRef(0);
-  const hostedHint =
-    hostedMode && !cadRuntimeEnabled
-      ? `This ${deploymentTargetLabel} can open bundled projects and cached previews, but new CAD generation requires a FreeCAD-enabled server.`
-      : null;
 
-  const groupedParameters = useMemo(() => {
-    return schema.parameters
-      .filter((parameter) => !parameter.hidden)
+  const { groupedParameters, privateParameters } = useMemo(() => {
+    const visibleParameters = schema.parameters.filter((parameter) => !parameter.hidden);
+    const privateParameters = visibleParameters.filter(isPrivateParameter);
+    const groupedParameters = visibleParameters
+      .filter((parameter) => !isPrivateParameter(parameter))
       .reduce<Record<string, typeof schema.parameters>>((groups, parameter) => {
         const group = parameter.group || 'General';
         groups[group] = [...(groups[group] ?? []), parameter];
         return groups;
       }, {});
+
+    return { groupedParameters, privateParameters };
   }, [schema.parameters]);
 
   useEffect(() => {
@@ -156,6 +162,52 @@ export function ProjectPageClient({
     }
   };
 
+  const renderParameterControl = (parameter: GeneratedModelSchema['parameters'][number]) => (
+    <label className="grid gap-1.5" key={parameter.id}>
+      <span className="text-xs font-medium text-slate-700">{parameter.label}</span>
+      {parameter.type === 'boolean' ? (
+        <input
+          checked={Boolean(values[parameter.id])}
+          className="size-4 rounded border-slate-300 text-orange-500"
+          onChange={(event) => {
+            setValues((current) => ({ ...current, [parameter.id]: event.target.checked }));
+          }}
+          type="checkbox"
+        />
+      ) : parameter.type === 'enum' ? (
+        <select
+          className="h-8 rounded-md border border-slate-200 bg-white/90 px-3 text-sm outline-none ring-0 transition focus:border-orange-400"
+          onChange={(event) => {
+            setValues((current) => ({ ...current, [parameter.id]: event.target.value }));
+          }}
+          value={String(values[parameter.id])}
+        >
+          {parameter.enumOptions?.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <Input
+          max={parameter.constraints?.max}
+          min={parameter.constraints?.min}
+          onChange={(event) => {
+            const raw = event.target.value;
+            setValues((current) => ({
+              ...current,
+              [parameter.id]: parameter.type === 'text' ? raw : raw === '' ? '' : Number(raw)
+            }));
+          }}
+          step={parameter.constraints?.step ?? (parameter.type === 'integer' ? 1 : 'any')}
+          type={parameter.type === 'text' ? 'text' : 'number'}
+          value={String(values[parameter.id])}
+        />
+      )}
+      {parameter.description ? <span className="text-[11px] leading-5 text-slate-400">{parameter.description}</span> : null}
+    </label>
+  );
+
   return (
     <main className="relative h-screen overflow-hidden bg-transparent">
       <section
@@ -232,11 +284,6 @@ export function ProjectPageClient({
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
-              {hostedHint ? (
-                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/85 p-3 text-xs leading-5 text-amber-900">
-                  {hostedHint}
-                </div>
-              ) : null}
               {project.capabilities.configurable ? (
                 <div className="space-y-4">
                   {Object.entries(groupedParameters).map(([group, parameters]) => (
@@ -246,54 +293,36 @@ export function ProjectPageClient({
                         <span className="text-[11px] text-slate-400">{parameters.length}</span>
                       </div>
                       <div className="space-y-2.5">
-                        {parameters.map((parameter) => (
-                          <label className="grid gap-1.5" key={parameter.id}>
-                            <span className="text-xs font-medium text-slate-700">{parameter.label}</span>
-                            {parameter.type === 'boolean' ? (
-                              <input
-                                checked={Boolean(values[parameter.id])}
-                                className="size-4 rounded border-slate-300 text-orange-500"
-                                onChange={(event) => {
-                                  setValues((current) => ({ ...current, [parameter.id]: event.target.checked }));
-                                }}
-                                type="checkbox"
-                              />
-                            ) : parameter.type === 'enum' ? (
-                              <select
-                                className="h-8 rounded-md border border-slate-200 bg-white/90 px-3 text-sm outline-none ring-0 transition focus:border-orange-400"
-                                onChange={(event) => {
-                                  setValues((current) => ({ ...current, [parameter.id]: event.target.value }));
-                                }}
-                                value={String(values[parameter.id])}
-                              >
-                                {parameter.enumOptions?.map((option) => (
-                                  <option key={option.value} value={option.value}>
-                                    {option.label}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <Input
-                                max={parameter.constraints?.max}
-                                min={parameter.constraints?.min}
-                                onChange={(event) => {
-                                  const raw = event.target.value;
-                                  setValues((current) => ({
-                                    ...current,
-                                    [parameter.id]: parameter.type === 'text' ? raw : raw === '' ? '' : Number(raw)
-                                  }));
-                                }}
-                                step={parameter.constraints?.step ?? (parameter.type === 'integer' ? 1 : 'any')}
-                                type={parameter.type === 'text' ? 'text' : 'number'}
-                                value={String(values[parameter.id])}
-                              />
-                            )}
-                            {parameter.description ? <span className="text-[11px] leading-5 text-slate-400">{parameter.description}</span> : null}
-                          </label>
-                        ))}
+                        {parameters.map(renderParameterControl)}
                       </div>
                     </section>
                   ))}
+                  {privateParameters.length > 0 ? (
+                    <section className="mt-5 space-y-2.5 border-t border-slate-200/70 pt-4">
+                      <button
+                        aria-controls="private-controls-panel"
+                        aria-expanded={!privateControlsCollapsed}
+                        className="flex w-full items-center justify-between rounded-xl border border-slate-200/80 bg-white/70 px-3 py-2 text-left transition hover:border-slate-300 hover:bg-white/90"
+                        onClick={() => setPrivateControlsCollapsed((current) => !current)}
+                        type="button"
+                      >
+                        <div className="flex items-center gap-2">
+                          {privateControlsCollapsed ? <ChevronRight className="size-4 text-slate-400" /> : <ChevronDown className="size-4 text-slate-400" />}
+                          <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Private</span>
+                        </div>
+                        <span className="text-[11px] text-slate-400">{privateParameters.length}</span>
+                      </button>
+                      {!privateControlsCollapsed ? (
+                        <div className="space-y-2.5" id="private-controls-panel">
+                          <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-2.5 text-[11px] leading-5 text-amber-900">
+                            Most users will not need to change private controls. Use them only for print tuning, material
+                            adjustments, or troubleshooting.
+                          </div>
+                          {privateParameters.map(renderParameterControl)}
+                        </div>
+                      ) : null}
+                    </section>
+                  ) : null}
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed border-slate-200 bg-white/60 p-4 text-xs leading-5 text-slate-500">
