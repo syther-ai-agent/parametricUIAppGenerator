@@ -203,6 +203,13 @@ export const getProjectSourcePath = async (projectId: string, rootDir = env.proj
 export const getPreviewArtifactPath = (projectId: string, artifactId: string, format: 'stl' | 'glb', rootDir = env.projectsRootDir) =>
   path.join(getProjectPaths(projectId, rootDir).previewDir, `${artifactId}.${format}`);
 
+const buildPreviewArtifactId = (projectId: string, values: Record<string, ParameterValue>) =>
+  createHash('sha256')
+    .update(projectId)
+    .update(JSON.stringify(values, Object.keys(values).sort()))
+    .digest('hex')
+    .slice(0, 16);
+
 export const createPreviewArtifact = async (
   projectId: string,
   values: Record<string, ParameterValue>,
@@ -211,11 +218,7 @@ export const createPreviewArtifact = async (
   const project = await getProject(projectId, rootDir);
   const schema = await getProjectSchema(projectId, rootDir);
   const sourcePath = await getProjectSourcePath(projectId, rootDir);
-  const artifactId = createHash('sha256')
-    .update(project.id)
-    .update(JSON.stringify(values, Object.keys(values).sort()))
-    .digest('hex')
-    .slice(0, 16);
+  const artifactId = buildPreviewArtifactId(project.id, values);
   const format = 'stl' as const;
   const artifactPath = getPreviewArtifactPath(projectId, artifactId, format, rootDir);
 
@@ -260,6 +263,17 @@ export const createExportArtifact = async (
     return {
       fileName: project.sourceFileName,
       outputPath: sourcePath,
+      mimeType: getMimeType(format)
+    };
+  }
+
+  if (!env.allowCadRuntime && format === 'STL') {
+    const artifactId = buildPreviewArtifactId(project.id, values);
+    const outputPath = getPreviewArtifactPath(project.id, artifactId, 'stl', rootDir);
+    await stat(outputPath);
+    return {
+      fileName: `${project.id}-${artifactId}.stl`,
+      outputPath,
       mimeType: getMimeType(format)
     };
   }

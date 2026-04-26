@@ -113,7 +113,10 @@ export function ProjectPageClient({
     };
   }, [project.id, values]);
 
-  const canDownloadFormat = (format: 'STL' | 'STEP') => cadRuntimeEnabled || (project.sourceType === 'STEP' && format === 'STEP');
+  const canDownloadFormat = (format: 'STL' | 'STEP') =>
+    cadRuntimeEnabled ||
+    (project.sourceType === 'STEP' && format === 'STEP') ||
+    (format === 'STL' && preview.status === 'ready' && preview.format === 'stl');
 
   const downloadFile = async (format: 'STL' | 'STEP') => {
     if (!canDownloadFormat(format)) {

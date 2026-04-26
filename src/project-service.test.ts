@@ -1,7 +1,9 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import { env } from '../lib/env';
 import { createExportArtifact, createProject, getProjectBundle, getProjectPaths } from '../lib/projects';
 
 const tempDirs: string[] = [];
@@ -70,5 +72,38 @@ describe('project storage', () => {
 
     expect(artifact.fileName).toBe('sample.step');
     expect(exported).toBe('ISO-10303-21; END-ISO-10303-21;');
+  });
+
+  it('serves cached STL previews as downloads when CAD runtime is unavailable', async () => {
+    const rootDir = await createTempRoot();
+    const contents = await readFile(path.join(process.cwd(), 'data', 'IDCardDesignWorking.FCStd'));
+
+    const created = await createProject({
+      fileName: 'IDCardDesignWorking.FCStd',
+      contents,
+      rootDir
+    });
+
+    const values = Object.fromEntries(created.schema.parameters.map((parameter) => [parameter.id, parameter.defaultValue]));
+    const artifactId = createHash('sha256')
+      .update(created.project.id)
+      .update(JSON.stringify(values, Object.keys(values).sort()))
+      .digest('hex')
+      .slice(0, 16);
+    const previewPath = path.join(rootDir, created.project.id, 'cache', 'previews', `${artifactId}.stl`);
+    await mkdir(path.dirname(previewPath), { recursive: true });
+    await writeFile(previewPath, 'solid cached-preview', 'utf8');
+
+    const previous = env.allowCadRuntime;
+    let artifact;
+    try {
+      (env as { allowCadRuntime: boolean }).allowCadRuntime = false;
+      artifact = await createExportArtifact(created.project.id, values, 'STL', rootDir);
+    } finally {
+      (env as { allowCadRuntime: boolean }).allowCadRuntime = previous;
+    }
+
+    expect(artifact.fileName).toBe(`${created.project.id}-${artifactId}.stl`);
+    expect(await readFile(artifact.outputPath, 'utf8')).toBe('solid cached-preview');
   });
 });
