@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LogOut } from 'lucide-react';
 import { env } from '../../lib/env';
 import { listProjects } from '../../lib/projects';
 import { UploadForm } from '../../components/upload-form';
 import { Badge } from '../../components/ui/badge';
+import { Button } from '../../components/ui/button';
 import { Card, CardContent } from '../../components/ui/card';
 
 export default async function AdminPage() {
@@ -14,7 +15,15 @@ export default async function AdminPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-5 sm:px-6 lg:px-8">
       <section className="grid gap-8 rounded-[28px] border border-white/70 bg-white/82 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
         <div className="space-y-5">
-          <Badge variant="accent">Admin Console</Badge>
+          <div className="flex items-center justify-between gap-4">
+            <Badge variant="accent">Admin Console</Badge>
+            <form action="/api/admin/logout" method="post">
+              <Button size="sm" type="submit" variant="outline">
+                <LogOut className="size-3.5" />
+                Sign out
+              </Button>
+            </form>
+          </div>
           <div className="max-w-3xl space-y-3">
             <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-[3.75rem] lg:leading-[1.02]">
               Upload a model and publish a compact configurator in one step.

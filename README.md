@@ -16,6 +16,22 @@ Single host app for uploading `FCStd` and `STEP` files as shareable project page
 - the app auto-detects common macOS FreeCAD install paths before falling back to `FreeCADCmd`
 - no end user needs to open FreeCAD directly
 
+## Admin Authentication
+
+- `/admin` and `POST /api/projects` are protected with a server-side login flow
+- Sign-in happens at `/login`, which sets an `HttpOnly` session cookie after the server validates credentials
+- Set `ADMIN_USERNAME` and `ADMIN_PASSWORD` in local env files or in your Vercel project settings
+- Optionally set `ADMIN_SESSION_SECRET` to control session invalidation independently from the password
+- Public project pages under `/projects/<project-id>` remain accessible without auth
+
+Example local env:
+
+```bash
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=change-me
+ADMIN_SESSION_SECRET=replace-this-with-a-long-random-string
+```
+
 ## Vercel Deployment
 
 - A standard Vercel deploy can host this app as a read-only viewer for bundled `projects-data`
